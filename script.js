@@ -119,3 +119,20 @@ installBtn.addEventListener('click', async () => {
   deferredPrompt = null;
   installBtn.style.display = 'none';
 });
+
+// Hide the install button if running as a standalone PWA
+function hideInstallButtonIfStandalone() {
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches || 
+    window.navigator.standalone === true; // iOS Safari check
+
+  if (isStandalone) {
+    installBtn.style.display = 'none';
+  }
+}
+
+// Run on load
+hideInstallButtonIfStandalone();
+
+// Also listen for changes in display mode (some browsers fire this dynamically)
+window.matchMedia('(display-mode: standalone)').addEventListener('change', hideInstallButtonIfStandalone);
