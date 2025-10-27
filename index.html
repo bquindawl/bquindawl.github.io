@@ -4,231 +4,41 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Steam Property Calculator</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: linear-gradient(to bottom right, #eff6ff, #cffafe);
-      min-height: 100vh;
-      padding: 2rem;
-      color: #1f2937;
-    }
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- PWA: Manifest + theme color -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#2563eb" />
 
-    .container {
-      max-width: 700px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 1rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      padding: 2rem;
-    }
+  <!-- iOS specific -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SteamCalc" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
 
-    h1 {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 1.75rem;
-      color: #1e3a8a;
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 0.25rem;
-    }
-
-    input {
-      width: 100%;
-      padding: 0.5rem 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 2px #bfdbfe;
-    }
-
-    button {
-      cursor: pointer;
-      padding: 0.75rem 1rem;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      font-weight: 500;
-      transition: background 0.2s;
-    }
-
-    .btn-primary {
-      background: #2563eb;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #1d4ed8;
-    }
-
-    .btn-secondary {
-      background: #f3f4f6;
-      border: 1px solid #d1d5db;
-      color: #374151;
-    }
-
-    .btn-secondary:hover {
-      background: #e5e7eb;
-    }
-
-    .results {
-      margin-top: 1.5rem;
-      background: linear-gradient(to right, #eff6ff, #ecfeff);
-      border: 1px solid #bfdbfe;
-      border-radius: 0.75rem;
-      padding: 1.5rem;
-    }
-
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #bfdbfe;
-    }
-
-    .result-row:last-child {
-      border-bottom: none;
-    }
-
-    .note {
-      margin-top: 1.5rem;
-      background: #f9fafb;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      font-size: 0.8rem;
-      color: #4b5563;
-    }
-
-    .warning {
-      background: #fef9c3;
-      border: 1px solid #fde68a;
-      border-radius: 0.5rem;
-      padding: 0.75rem;
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: #854d0e;
-    }
-  </style>
+  <script defer src="script.js"></script>
 </head>
 <body>
-  <div class="container">
+  <div class="app-container">
     <h1>💧 Steam Property Calculator</h1>
 
     <label>Steam Temperature (°F)</label>
     <input id="tempF" type="number" placeholder="Enter temperature in °F" />
 
-    <label>Steam Pressure (PSIG)</label>
-    <input id="pressurePSIG" type="number" placeholder="Enter pressure in PSIG" />
+    <label>Steam Pressure (PSIA)</label>
+    <input id="pressurePSIA" type="number" placeholder="Enter pressure in PSIA" />
 
-    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-      <button class="btn-primary" onclick="calculate()">Calculate</button>
-      <button class="btn-secondary" onclick="resetForm()">Reset</button>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="calculateBtn">Calculate</button>
+      <button class="btn btn-secondary" id="resetBtn">Reset</button>
     </div>
 
-    <div id="results" class="results" style="display: none;"></div>
+    <div id="results" class="results" style="display:none;"></div>
 
     <div class="note">
       <strong>Note:</strong> This calculator uses interpolated steam table data and approximation formulas.
-      For precise engineering calculations, refer to official ASME steam tables or specialized software.
+      For precise engineering calculations, refer to ASME steam tables or specialized software.
     </div>
   </div>
-
-  <script>
-    const steamTable = {
-      14.7: 212.0, 20: 228.0, 30: 250.3, 40: 267.2, 50: 281.0,
-      60: 292.7, 70: 302.9, 80: 312.0, 90: 320.3, 100: 327.8,
-      120: 341.2, 140: 353.0, 160: 363.5, 180: 373.1, 200: 381.8,
-      250: 400.9, 300: 417.3, 350: 431.7, 400: 444.6, 450: 456.3,
-      500: 467.0, 600: 486.2, 700: 503.1, 800: 518.2, 900: 531.9, 1000: 544.6
-    };
-
-    function getSaturationTemp(psia) {
-      const pressures = Object.keys(steamTable).map(Number).sort((a, b) => a - b);
-      if (psia <= pressures[0]) return steamTable[pressures[0]];
-      if (psia >= pressures[pressures.length - 1]) return steamTable[pressures[pressures.length - 1]];
-
-      for (let i = 0; i < pressures.length - 1; i++) {
-        if (psia >= pressures[i] && psia <= pressures[i + 1]) {
-          const p1 = pressures[i];
-          const p2 = pressures[i + 1];
-          const t1 = steamTable[p1];
-          const t2 = steamTable[p2];
-          return t1 + ((t2 - t1) * (psia - p1)) / (p2 - p1);
-        }
-      }
-      return steamTable[pressures[pressures.length - 1]];
-    }
-
-    function calculateEnthalpy(tempF, psia, satTemp) {
-      const isSuperheated = tempF > satTemp;
-      if (isSuperheated) {
-        const hfg = 970.3 - 0.5 * psia;
-        const hf = 180 + 0.3 * satTemp;
-        const hg = hf + hfg;
-        const superheat = tempF - satTemp;
-        const cpSuperheat = 0.48;
-        return hg + cpSuperheat * superheat;
-      } else {
-        const hf = 180 + 0.3 * tempF;
-        return hf;
-      }
-    }
-
-    function calculate() {
-      const temp = parseFloat(document.getElementById('tempF').value);
-      const pressureGauge = parseFloat(document.getElementById('pressurePSIG').value);
-
-      if (isNaN(temp) || isNaN(pressureGauge)) {
-        alert('Please enter valid numbers for both temperature and pressure.');
-        return;
-      }
-
-      const psia = pressureGauge + 14.7;
-      const satTemp = getSaturationTemp(psia);
-      const superheat = temp - satTemp;
-      const isSuperheated = superheat > 0;
-      const enthalpy = calculateEnthalpy(temp, psia, satTemp);
-
-      let html = `
-        <h2>Results</h2>
-        <div class="result-row"><span>Pressure (PSIA):</span><strong>${psia.toFixed(1)} PSIA</strong></div>
-        <div class="result-row"><span>Saturation Temperature:</span><strong>${satTemp.toFixed(1)} °F</strong></div>
-        <div class="result-row"><span>Steam Condition:</span><strong style="color:${isSuperheated ? '#dc2626' : '#2563eb'};">
-          ${isSuperheated ? 'Superheated' : 'Saturated/Wet'}
-        </strong></div>
-        <div class="result-row"><span>Degrees of Superheat:</span><strong>${superheat.toFixed(1)} °F</strong></div>
-        <div class="result-row"><span>Steam Enthalpy:</span><strong>${enthalpy.toFixed(1)} BTU/lb</strong></div>
-      `;
-
-      if (!isSuperheated && superheat < 0) {
-        html += `
-          <div class="warning">
-            ⚠️ Temperature is below saturation point. This indicates wet steam or subcooled liquid.
-          </div>
-        `;
-      }
-
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = html;
-      resultsDiv.style.display = 'block';
-    }
-
-    function resetForm() {
-      document.getElementById('tempF').value = '';
-      document.getElementById('pressurePSIG').value = '';
-      document.getElementById('results').style.display = 'none';
-    }
-  </script>
 </body>
 </html>
