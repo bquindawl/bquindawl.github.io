@@ -19,25 +19,29 @@
   <script defer src="script.js"></script>
 </head>
 <body>
-  <div class="app-container">
-    <h1>💧 Steam Property Calculator</h1>
+  <div class="container">
+    <div class="app-container">
+      <h1>💧 Steam Property Calculator</h1>
 
-    <label>Steam Temperature (°F)</label>
-    <input id="tempF" type="number" placeholder="Enter temperature in °F" />
+      <label>Steam Temperature (°F)</label>
+      <input id="tempF" type="number" placeholder="Enter temperature in °F" />
 
-    <label>Steam Pressure (PSIA)</label>
-    <input id="pressurePSIA" type="number" placeholder="Enter pressure in PSIA" />
+      <label>Steam Pressure (PSIA)</label>
+      <input id="pressurePSIA" type="number" placeholder="Enter pressure in PSIA" />
 
-    <div class="btn-row">
-      <button class="btn btn-primary" id="calculateBtn">Calculate</button>
-      <button class="btn btn-secondary" id="resetBtn">Reset</button>
-    </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="calculateBtn">Calculate</button>
+        <button class="btn btn-secondary" id="resetBtn">Reset</button>
+      </div>
 
-    <div id="results" class="results" style="display:none;"></div>
+      <div id="results" class="results" style="display:none;"></div>
 
-    <div class="note">
-      <strong>Note:</strong> This calculator uses interpolated steam table data and approximation formulas.
-      For precise engineering calculations, refer to ASME steam tables or specialized software.
+      <div class="note">
+        <strong>Note:</strong> This calculator uses interpolated steam table data and approximation formulas.
+        For precise engineering calculations, refer to ASME steam tables or specialized software.
+      </div>
+
+      <button id="installBtn" class="install-btn">Add to Home Screen</button>
     </div>
   </div>
 </body>

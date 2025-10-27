@@ -91,3 +91,31 @@ document.getElementById('resetBtn').addEventListener('click', resetForm);
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
 }
+
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent the mini-infobar from appearing
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show the install button
+  installBtn.style.display = 'block';
+});
+
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+
+  if (outcome === 'accepted') {
+    console.log('User accepted the install prompt');
+  } else {
+    console.log('User dismissed the install prompt');
+  }
+
+  // Clear the deferred prompt
+  deferredPrompt = null;
+  installBtn.style.display = 'none';
+});

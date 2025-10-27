@@ -14,6 +14,10 @@ html, body {
   color: #1f2937;
 }
 
+.container {
+    padding: 0 8px;
+}
+
 .app-container {
   max-width: 700px;
   margin: auto;
@@ -88,6 +92,25 @@ input:focus {
   background: #e5e7eb;
 }
 
+.install-btn {
+  width: 100%;
+  background-color: #10b981;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.9rem 1.2rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: none; /* hidden by default */
+}
+
+.install-btn:hover {
+  background-color: #059669;
+}
+
 .results {
   margin-top: 1.5rem;
   background: linear-gradient(to right, var(--light-blue), var(--light-cyan));
@@ -124,4 +147,10 @@ input:focus {
   padding: 1rem;
   font-size: 0.85rem;
   color: var(--gray);
+}
+
+@media (display-mode: standalone) {
+  .install-btn {
+    display: none !important; /* Hide the button once installed */
+  }
 }
